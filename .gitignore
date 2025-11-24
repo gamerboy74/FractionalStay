@@ -176,3 +176,11 @@ storybook-static/
 !README.md
 **/*.md
 !**/README.md
+
+# Utility and debugging scripts
+**/scripts/check-*.js
+**/scripts/check-*.ts
+**/scripts/cancel-*.ts
+**/scripts/estimate-*.ts
+**/scripts/mint-*.ts
+**/scripts/setup.ts
