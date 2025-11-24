@@ -202,12 +202,8 @@ export function KYCManagementContent() {
       })
 
       if (response.ok) {
-        // Refresh list
-        setKycDocuments(prev => prev.map(d => 
-          d.id === doc.id 
-            ? { ...d, status: 'REJECTED', rejection_reason: rejectionReason, reviewed_at: new Date().toISOString(), reviewed_by: address } 
-            : d
-        ))
+        // Force refetch to get updated data from database (don't rely on local state update)
+        await fetchKYCDocuments()
         setSelectedDoc(null)
         setRejectionReason('')
         alert('❌ KYC Rejected')
