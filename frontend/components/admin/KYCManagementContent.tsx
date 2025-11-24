@@ -44,10 +44,20 @@ export function KYCManagementContent() {
   // Fetch all KYC documents
   const fetchKYCDocuments = async () => {
     try {
-      const response = await fetch('/api/admin/kyc/list')
+      // Add cache-busting timestamp to force fresh data
+      const timestamp = Date.now()
+      const response = await fetch(`/api/admin/kyc/list?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setKycDocuments(data.documents || [])
+      } else {
+        console.error('Failed to fetch KYC documents:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Error fetching KYC documents:', error)
