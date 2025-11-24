@@ -125,10 +125,27 @@ subgraph/build/
 *.key
 *.crt
 
-# Test files (optional - uncomment if you want to ignore test outputs)
-# test-results/
-# playwright-report/
-# .playwright/
+# Test files
+**/*test*.ts
+**/*test*.js
+**/*test*.tsx
+**/*test*.jsx
+**/*spec*.ts
+**/*spec*.js
+**/*spec*.tsx
+**/*spec*.jsx
+**/test/
+**/tests/
+**/__tests__/
+**/*.test.*
+**/*.spec.*
+test-*.sql
+test-*.html
+test-*.js
+test-*.ts
+test-results/
+playwright-report/
+.playwright/
 
 # Database
 *.db
