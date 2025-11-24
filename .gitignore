@@ -171,11 +171,14 @@ storybook-static/
 # Debug
 .vscode-test/
 
-# Documentation files (keep only README.md)
+# Documentation files (keep only README.md and service READMEs)
 *.md
 !README.md
 **/*.md
 !**/README.md
+# Keep service-specific READMEs
+!indexer/README.md
+!relayer-service/README.md
 
 # Utility and debugging scripts
 **/scripts/check-*.js
