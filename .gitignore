@@ -182,5 +182,5 @@ storybook-static/
 **/scripts/check-*.ts
 **/scripts/cancel-*.ts
 **/scripts/estimate-*.ts
-**/scripts/mint-*.ts
 **/scripts/setup.ts
+# Keep mint-usdc.ts (needed for MintUSDCButton)
