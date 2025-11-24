@@ -34,8 +34,8 @@ const nextConfig = {
     optimizePackageImports: ['@heroicons/react', '@headlessui/react', 'wagmi', 'viem', 'lucide-react'],
     // Enable server components optimization
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
-    // Enable faster refresh
-    optimizeCss: true,
+    // Disable optimizeCss to avoid critters dependency issue on Vercel
+    // optimizeCss: true,
   },
   
   webpack: (config, { isServer, webpack }) => {
