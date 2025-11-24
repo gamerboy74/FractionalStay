@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio API Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .output {
+            white-space: pre-wrap;
+            background: #000;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Portfolio API Test</h1>
+    <p>Wallet: <strong>0x7d5b1d69a839b27bf120363f6c5af6427bc763ea</strong></p>
+    
+    <button onclick="testAPI()">Test Portfolio API</button>
+    <button onclick="clearOutput()">Clear</button>
+    
+    <div class="output" id="output">Click "Test Portfolio API" to start...</div>
+
+    <script>
+        const wallet = '0x7d5b1d69a839b27bf120363f6c5af6427bc763ea';
+        const output = document.getElementById('output');
+
+        function log(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            let text = `[${timestamp}] ${message}`;
+            if (data) {
+                text += '\n' + JSON.stringify(data, null, 2);
+            }
+            output.innerHTML += text + '\n\n';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        async function testAPI() {
+            clearOutput();
+            log('🚀 Starting API test...');
+            log('📍 Wallet:', wallet);
+            
+            const url = `http://localhost:3001/api/users/${wallet}/portfolio`;
+            log('🌐 URL:', url);
+            
+            try {
+                log('⏳ Fetching...');
+                const response = await fetch(url);
+                
+                log('📊 Status:', response.status + ' ' + response.statusText);
+                log('✅ Response OK:', response.ok);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('📦 Data received:', data);
+                    
+                    if (data.portfolio && data.portfolio.length > 0) {
+                        log('✅ SUCCESS! Found ' + data.portfolio.length + ' properties');
+                        data.portfolio.forEach((p, i) => {
+                            log(`Property ${i + 1}:`, {
+                                name: p.property.name,
+                                token_id: p.token_id,
+                                shares: p.shares,
+                                invested: p.total_invested,
+                                current_value: p.current_value
+                            });
+                        });
+                    } else {
+                        log('⚠️  No properties found in portfolio');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    log('❌ Error response:', errorText);
+                }
+            } catch (error) {
+                log('❌ Exception:', error.message);
+                console.error(error);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testAPI, 500);
+        });
+    </script>
+</body>
+</html>

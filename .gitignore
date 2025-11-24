@@ -1,0 +1,155 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Environment files
+.env
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.local
+**/.env*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+**/dist/
+**/build/
+**/.next/
+**/out/
+
+# TypeScript
+*.tsbuildinfo
+**/*.tsbuildinfo
+next-env.d.ts
+**/next-env.d.ts
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+**/coverage/
+**/.nyc_output/
+
+# Hardhat / Solidity
+cache/
+artifacts/
+typechain/
+typechain-types/
+deployments.json
+**/cache/
+**/artifacts/
+**/typechain/
+**/typechain-types/
+**/deployments.json
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Vercel
+.vercel
+**/.vercel
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+.tmp/
+.temp/
+
+# Package manager locks (optional - uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# The Graph
+subgraph/generated/
+subgraph/build/
+**/subgraph/generated/
+**/subgraph/build/
+
+# Misc
+.parcel-cache/
+.cache/
+.turbo/
+*.pem
+*.key
+*.crt
+
+# Test files (optional - uncomment if you want to ignore test outputs)
+# test-results/
+# playwright-report/
+# .playwright/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IPFS / Pinata (if storing hashes locally)
+# Uncomment if you don't want to track IPFS hash files
+# **/kyc-sbt-ipfs-hashes.json
+
+# OneDrive / Cloud sync artifacts
+~$*
+*.odt
+*.ods
+
+# Compiled JavaScript (if any)
+*.js.map
+*.d.ts.map
+
+# Storybook
+storybook-static/
+
+# Debug
+.vscode-test/
