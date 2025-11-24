@@ -153,3 +153,9 @@ storybook-static/
 
 # Debug
 .vscode-test/
+
+# Documentation files (keep only README.md)
+*.md
+!README.md
+**/*.md
+!**/README.md
