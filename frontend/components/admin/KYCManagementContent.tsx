@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
+import { useRouter } from 'next/navigation'
 
 interface KYCDocument {
   id: string
@@ -30,6 +31,7 @@ interface KYCDocument {
 
 export function KYCManagementContent() {
   const { address } = useAccount()
+  const router = useRouter()
   const [kycDocuments, setKycDocuments] = useState<KYCDocument[]>([])
   const [filteredDocs, setFilteredDocs] = useState<KYCDocument[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -47,15 +49,19 @@ export function KYCManagementContent() {
   // Fetch all KYC documents
   const fetchKYCDocuments = async () => {
     try {
-      // Add cache-busting timestamp to force fresh data
+      // Add multiple cache-busting parameters to force fresh data
       const timestamp = Date.now()
-      const response = await fetch(`/api/admin/kyc/list?t=${timestamp}&_=${timestamp}`, {
+      const randomId = Math.random().toString(36).substring(7)
+      const response = await fetch(`/api/admin/kyc/list?t=${timestamp}&_=${timestamp}&r=${randomId}&nocache=${Date.now()}`, {
         cache: 'no-store',
+        method: 'GET',
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
           'Pragma': 'no-cache',
           'Expires': '0',
-        }
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'same-origin',
       })
       if (response.ok) {
         const data = await response.json()
@@ -175,22 +181,26 @@ export function KYCManagementContent() {
 
         setSelectedDoc(null)
 
-        // Force immediate refetch and multiple retries to ensure database sync
+        // Force immediate refetch and clear all caches
+        router.refresh() // Force Next.js to refresh the page data
         await fetchKYCDocuments()
         
-        // Retry after 2 seconds
+        // Retry after 2 seconds with router refresh
         setTimeout(async () => {
+          router.refresh()
           await fetchKYCDocuments()
         }, 2000)
         
-        // Retry after 5 seconds
+        // Retry after 5 seconds with router refresh
         setTimeout(async () => {
+          router.refresh()
           await fetchKYCDocuments()
         }, 5000)
 
         // Auto-close progress modal after 3 seconds
         setTimeout(() => {
           setApprovalProgress(null)
+          router.refresh() // Final refresh to ensure UI is in sync
         }, 3000)
       } else {
         const errorMsg = data.error || data.details || 'Unknown error'
@@ -242,6 +252,7 @@ export function KYCManagementContent() {
 
       if (response.ok) {
         // Force refetch to get updated data from database (don't rely on local state update)
+        router.refresh() // Force Next.js to refresh the page data
         await fetchKYCDocuments()
         setSelectedDoc(null)
         setRejectionReason('')

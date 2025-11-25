@@ -12,6 +12,11 @@ import { logger } from "@/lib/logger";
 import { getAddress } from "viem";
 import axios from "axios";
 
+// Disable Next.js caching for this route - always execute fresh
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 // Server-side function to upload SBT metadata to IPFS via Pinata
 async function uploadSBTMetadataToIPFS(data: {
   walletAddress: string;
@@ -116,6 +121,16 @@ async function uploadSBTMetadataToIPFS(data: {
     };
   }
 }
+
+// Helper function to get no-cache headers
+const getNoCacheHeaders = () => ({
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+  "Pragma": "no-cache",
+  "Expires": "0",
+  "Surrogate-Control": "no-store",
+  "X-Accel-Expires": "0",
+  "X-Cache-Control": "no-store",
+});
 
 // Approve KYC with on-chain proof submission and SBT minting
 export async function POST(request: NextRequest) {
@@ -418,6 +433,8 @@ export async function POST(request: NextRequest) {
         sbtTxHash,
         metadataCID,
         verifiedAt: verifiedAtTimestamp,
+      }, {
+        headers: getNoCacheHeaders(),
       });
     } catch (error) {
       logger.error("Error in SBT minting or database update", error, {

@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { logger } from "@/lib/logger";
 
+// Disable Next.js caching for this route - always fetch fresh data
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export async function GET(request: NextRequest) {
   try {
     if (!supabaseAdmin) {
@@ -139,10 +144,12 @@ export async function GET(request: NextRequest) {
       {
         headers: {
           "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
           Pragma: "no-cache",
           Expires: "0",
           "Surrogate-Control": "no-store",
+          "X-Accel-Expires": "0",
+          "X-Cache-Control": "no-store",
         },
       }
     );
