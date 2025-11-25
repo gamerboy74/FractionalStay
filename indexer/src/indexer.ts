@@ -170,15 +170,15 @@ export class BlockchainIndexer {
    */
   private async processBlocks(): Promise<void> {
     try {
-      // Get latest block number
-      const latestBlock = await publicClient.getBlockNumber()
-      
-      logger.debug({ latestBlock: Number(latestBlock) }, 'Latest block on chain')
+    // Get latest block number
+    const latestBlock = await publicClient.getBlockNumber()
+    
+    logger.debug({ latestBlock: Number(latestBlock) }, 'Latest block on chain')
 
       // Process each contract (continue even if one fails)
-      for (const contract of CONTRACTS) {
+    for (const contract of CONTRACTS) {
         try {
-          await this.processContract(contract, latestBlock)
+      await this.processContract(contract, latestBlock)
         } catch (error) {
           logger.error(
             { error, contractAddress: contract.address },

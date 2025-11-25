@@ -7,7 +7,8 @@ interface KYCDocument {
   id: string
   user_wallet: string
   wallet_address: string
-  full_name: string
+  full_name: string // Original from kyc_documents table (for details modal)
+  display_name?: string // Normalized name for list display (optional, falls back to full_name)
   date_of_birth: string
   nationality: string
   address: string
@@ -23,6 +24,8 @@ interface KYCDocument {
   reviewed_at?: string
   reviewed_by?: string
   rejection_reason?: string
+  user_name?: string // From users table (optional)
+  user_email?: string // From users table (optional)
 }
 
 export function KYCManagementContent() {
@@ -46,16 +49,26 @@ export function KYCManagementContent() {
     try {
       // Add cache-busting timestamp to force fresh data
       const timestamp = Date.now()
-      const response = await fetch(`/api/admin/kyc/list?t=${timestamp}`, {
+      const response = await fetch(`/api/admin/kyc/list?t=${timestamp}&_=${timestamp}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
+          'Expires': '0',
         }
       })
       if (response.ok) {
         const data = await response.json()
-        setKycDocuments(data.documents || [])
+        console.log('[KYC Fetch] Documents loaded:', data.documents?.length || 0)
+        const documents = data.documents || []
+        setKycDocuments(documents)
+        
+        // Log status distribution for debugging
+        const statusCounts = documents.reduce((acc: any, d: any) => {
+          acc[d.status] = (acc[d.status] || 0) + 1
+          return acc
+        }, {})
+        console.log('[KYC Fetch] Status distribution:', statusCounts)
       } else {
         console.error('Failed to fetch KYC documents:', response.status, response.statusText)
       }
@@ -68,6 +81,11 @@ export function KYCManagementContent() {
 
   useEffect(() => {
     fetchKYCDocuments()
+    // Refetch every 5 seconds to catch updates
+    const interval = setInterval(() => {
+      fetchKYCDocuments()
+    }, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   // Filter documents
@@ -82,6 +100,7 @@ export function KYCManagementContent() {
   const handleApprove = async (doc: KYCDocument) => {
     setActionLoading(true)
     const userWallet = doc.wallet_address || doc.user_wallet
+    const docId = doc.id // Store doc.id to use in optimistic update
     
     try {
       // Step 1: Initializing
@@ -136,9 +155,16 @@ export function KYCManagementContent() {
         })
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // Force refetch to get updated data from database
-        await fetchKYCDocuments()
-        
+        // Immediately update local state optimistically
+        const normalizedWallet = (userWallet || '').toLowerCase()
+        setKycDocuments(prev => prev.map(d => {
+          const docWallet = (d.wallet_address || d.user_wallet || '').toLowerCase()
+          if (d.id === docId || docWallet === normalizedWallet) {
+            return { ...d, status: 'APPROVED' as const }
+          }
+          return d
+        }))
+
         // Completed
         setApprovalProgress({
           step: 'completed',
@@ -149,7 +175,20 @@ export function KYCManagementContent() {
 
         setSelectedDoc(null)
 
-        // Auto-close after 3 seconds
+        // Force immediate refetch and multiple retries to ensure database sync
+        await fetchKYCDocuments()
+        
+        // Retry after 2 seconds
+        setTimeout(async () => {
+          await fetchKYCDocuments()
+        }, 2000)
+        
+        // Retry after 5 seconds
+        setTimeout(async () => {
+          await fetchKYCDocuments()
+        }, 5000)
+
+        // Auto-close progress modal after 3 seconds
         setTimeout(() => {
           setApprovalProgress(null)
         }, 3000)
@@ -317,11 +356,13 @@ export function KYCManagementContent() {
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-web3-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                         <span className="text-white font-bold text-lg">
-                          {doc.full_name.charAt(0).toUpperCase()}
+                          {(doc.display_name || doc.full_name || doc.user_name || 'U').charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 break-words mb-1">{doc.full_name}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 break-words mb-1">
+                          {doc.display_name || doc.full_name || doc.user_name || doc.wallet_address?.slice(0, 10) + '...' || 'Unknown User'}
+                        </h3>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span
                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-semibold shadow-sm ${

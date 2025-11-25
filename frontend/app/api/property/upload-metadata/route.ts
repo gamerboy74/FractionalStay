@@ -145,12 +145,12 @@ export async function POST(request: NextRequest) {
       
       try {
         const upload = await uploadFileToPinata(file, {
-          name: `${name.replace(/\s+/g, '-')}-image-${i + 1}`,
-          keyvalues: {
-            propertyName: name,
-            fileType: 'property-image',
-            index: i.toString(),
-          },
+            name: `${name.replace(/\s+/g, '-')}-image-${i + 1}`,
+            keyvalues: {
+              propertyName: name,
+              fileType: 'property-image',
+              index: i.toString(),
+            },
         });
         
         const ipfsUrl = `ipfs://${upload.IpfsHash}`;
@@ -170,11 +170,11 @@ export async function POST(request: NextRequest) {
     if (titleDeed) {
       try {
         const upload = await uploadFileToPinata(titleDeed, {
-          name: `${name.replace(/\s+/g, '-')}-title-deed`,
-          keyvalues: {
-            propertyName: name,
-            fileType: 'title-deed',
-          },
+            name: `${name.replace(/\s+/g, '-')}-title-deed`,
+            keyvalues: {
+              propertyName: name,
+              fileType: 'title-deed',
+            },
         });
         documents.titleDeed = `ipfs://${upload.IpfsHash}`;
         documentHashes.titleDeed = upload.IpfsHash;
@@ -188,11 +188,11 @@ export async function POST(request: NextRequest) {
     if (valuationReport) {
       try {
         const upload = await uploadFileToPinata(valuationReport, {
-          name: `${name.replace(/\s+/g, '-')}-valuation-report`,
-          keyvalues: {
-            propertyName: name,
-            fileType: 'valuation-report',
-          },
+            name: `${name.replace(/\s+/g, '-')}-valuation-report`,
+            keyvalues: {
+              propertyName: name,
+              fileType: 'valuation-report',
+            },
         });
         documents.valuationReport = `ipfs://${upload.IpfsHash}`;
         documentHashes.valuationReport = upload.IpfsHash;
@@ -206,11 +206,11 @@ export async function POST(request: NextRequest) {
     if (legalDocuments) {
       try {
         const upload = await uploadFileToPinata(legalDocuments, {
-          name: `${name.replace(/\s+/g, '-')}-legal-documents`,
-          keyvalues: {
-            propertyName: name,
-            fileType: 'legal-documents',
-          },
+            name: `${name.replace(/\s+/g, '-')}-legal-documents`,
+            keyvalues: {
+              propertyName: name,
+              fileType: 'legal-documents',
+            },
         });
         documents.legalDocuments = `ipfs://${upload.IpfsHash}`;
         documentHashes.legalDocuments = upload.IpfsHash;
@@ -241,12 +241,12 @@ export async function POST(request: NextRequest) {
     // ===== STEP 4: Upload Metadata JSON to IPFS =====
     try {
       const metadataUpload = await uploadJsonToPinata(metadata, {
-        name: `${name.replace(/\s+/g, '-')}-metadata`,
-        keyvalues: {
-          propertyName: name,
-          seller,
-          fileType: 'property-metadata',
-        },
+          name: `${name.replace(/\s+/g, '-')}-metadata`,
+          keyvalues: {
+            propertyName: name,
+            seller,
+            fileType: 'property-metadata',
+          },
       });
 
       const metadataUri = `ipfs://${metadataUpload.IpfsHash}`;
